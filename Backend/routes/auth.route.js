@@ -16,4 +16,7 @@ router.post("/logout", Logout);
 // http://localhost:5000/api/auth/refresh-token
 router.post("/refresh-token", refreshToken);
 
+// http://localhost:5000/api/auth/profile
+// router.post("/profile", getProfile) 
+
 export default router;
