@@ -63,7 +63,7 @@ export const Login = async (req, res) => {
 		const user = await User.findOne({ email });
         console.log(user.password);
 		if (user && (await user.comparePassword(password))){
-            console.log("here2");
+            
 			const { accessToken, refreshToken } = generateToken(user._id);
 			await storeRefreshToken(user._id, refreshToken);
 			setCookies(res, accessToken, refreshToken);
@@ -99,5 +99,40 @@ export const Logout = async (req, res, next) => {
     }catch (error) {
         console.log("Error in logout controller", error.message);
         res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+ 
+
+// create refresh token api --> recreate the access token 
+export const refreshToken = async (req, res, next) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        // if no refresh token --> error
+        console.log("refreshToken ====== ", refreshToken);
+        if(!refreshToken){
+            return res.status(401).json({message: "no refresh token found!"});
+        }
+        // if found then check if the token is valid, if valid then re generate access token , if not then logout
+        // decode the token using the secret
+        const decode = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        // get the token from redis database
+        const storedToken = await redis.get(`refresh_token_${decode.userId}`);
+        if(storedToken !== refreshToken){
+            return res.status(401).json({ message: "invalid refresh token" });
+        }
+        // if the tokens match, correct user not a hacker then create a new access token and save it to cookies
+        const accessToken = jwt.sign({ userId: decode.userId }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
+
+        res.cookie("accessToken", accessToken, {
+            httpOnly: true, // to prevent XXS attacks
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict", // to prevent CSRF attacks
+            maxAge: 15 * 60 * 1000 // 15 minutes
+        });
+        
+        return res.status(200).json({ message: "accessToken refreshed!" });
+
+    } catch (error) {
+        console.log("Error in refresh token controller", error.message);
     }
 };
