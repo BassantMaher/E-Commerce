@@ -1,6 +1,6 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware";
-import { getCoupon } from "../controllers/coupon.controller";
+import { getCoupon, validateCoupon } from "../controllers/coupon.controller";
 
 const router = express.Router();
 
@@ -9,6 +9,6 @@ const router = express.Router();
 router.get('/', protectRoute, getCoupon);
 
 // http://localhost:5000/api/coupons/validate
-router.get('/', protectRoute, validateCoupon);
+router.post('/', protectRoute, validateCoupon);
 
 export default router;

@@ -7,10 +7,11 @@ dotenv.config();
 const app = express();
 
 //routes
-import authRoutes from "./routes/auth.route.js";
-import productRoutes from "./routes/products.route.js";
-import cartRoutes from "./routes/cart.route.js";
-import couponRoutes from "./routes/coupons.route.js";
+import authRoutes from "./routes/auth.routes.js";
+import productRoutes from "./routes/products.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
+import couponRoutes from "./routes/coupons.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 import { connectDB } from "./lib/db.js";
 
 const PORT = process.env.PORT || 5000;
@@ -22,6 +23,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/coupons", couponRoutes);
+app.use("/api/payments", paymentRoutes);
 
 
 app.listen(PORT, () => {
