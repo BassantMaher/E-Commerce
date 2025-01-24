@@ -112,7 +112,7 @@ export const checkoutSuccess = async (req, res) => {
             });
         }
     } catch (error) {
-        console.log("error in the createCheckoutSession controller", error.message);
+        console.log("error in the checkoutSuccess controller", error.message);
         return res.status(500).json({ message: error.message });
     }
 };
